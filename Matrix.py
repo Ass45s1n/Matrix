@@ -2,19 +2,6 @@ class Matrix:
     def __init__(self,m):
         self.m = m
 
-    @staticmethod
-    def define():
-        nor = int(input('Enter No of Rows: '))
-        noc = int(input('Enter No of Columns: '))
-        m = []
-        for i in range(nor):
-            r = []
-            for j in range(noc):
-                value = float(input(f'Enter Value of Element {i+1},{j+1}: '))
-                r.append(value)
-            m.append(r)
-        return m
-
     def display(self,m):
         print()
         for i in m:
@@ -129,7 +116,7 @@ class Matrix:
                 r.append(self.m[i][j])
             if r != []:
                 d.append(r)
-        return Submatrix(d)
+        return subMatrix(d)
 
     def adjoint(self):
         res = []
@@ -142,16 +129,61 @@ class Matrix:
         res = Matrix(res)
         return res.transpose()
 
-class Submatrix(Matrix):
+    def __ele_row_opt_ge(self,row,col):
+        pv = self.m[row][col]
+        for c in range(len(self.m[0])):
+            self.m[row][c] = self.m[row][c] / pv
+        for r in range(len(self.m)):
+            if r > row:
+                multiply = -self.m[r][col]
+                for c in range(len(self.m[r])):
+                    self.m[r][c] = self.m[r][c] + (multiply * self.m[row][c])
+        return self.m
+
+    def __ele_row_opt_gj(self,row,col):
+        pv = self.m[row][col]
+        for c in range(len(self.m[0])):
+            self.m[row][c] = self.m[row][c] / pv
+        for r in range(len(self.m)):
+            if r != row:
+                multiply = -self.m[r][col]
+                for c in range(len(self.m[r])):
+                    self.m[r][c] = self.m[r][c] + (multiply * self.m[row][c])
+        return self.m
+
+    def gaussianElimination(self):
+        for r in range(len(self.m)):
+            run = True
+            for c in range(len(self.m[r])):
+                if run and self.m[r][c] != 0:
+                    self.__ele_row_opt_ge(r,c)
+                    run = False
+        self.display(self.m)
+
+    def gaussJordan(self):
+        for r in range(len(self.m)):
+            run = True
+            for c in range(len(self.m[r])):
+                if run and self.m[r][c] != 0:
+                    self.__ele_row_opt_gj(r,c)
+                    run = False
+        self.display(self.m)
+
+class subMatrix(Matrix):
     def __init__(self,m):
         self.m = m
 
+def defineMatrix():
+    nor = int(input('Enter No of Rows: '))
+    noc = int(input('Enter No of Columns: '))
+    m = []
+    for i in range(nor):
+        r = []
+        for j in range(noc):
+            value = float(input(f'Enter Value of Element {i+1},{j+1}: '))
+            r.append(value)
+        m.append(r)
+    return m
 
-# m1 = Matrix.define()
-# m1 = Matrix(m1)
-# print(m1.adjoint())
-a = [[4,5,3],[2,4,1]]
-b = [[3,1,5],[1,2,3]]
-c = Matrix(a)
-d = Matrix(b)
-e = c - d
+m = defineMatrix()
+matrix = Matrix(m)
